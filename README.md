@@ -1,5 +1,7 @@
 # Adrenaline
 
+**Warning:** master branch is currently out of sync with npm. Switch to the [0.11.1 tag](https://github.com/gyzerok/adrenaline/tree/v0.11.1) to see previous docs!
+
 [![build status](https://img.shields.io/travis/gyzerok/adrenaline/master.svg?style=flat-square)](https://travis-ci.org/gyzerok/adrenaline)
 [![npm version](https://img.shields.io/npm/v/adrenaline.svg?style=flat-square)](https://www.npmjs.com/package/adrenaline)
 [![npm downloads](https://img.shields.io/npm/dm/adrenaline.svg?style=flat-square)](https://www.npmjs.com/package/adrenaline)
@@ -8,7 +10,7 @@ This library provides subset of [Relay](https://github.com/facebook/relay) behav
 
 ## Why?
 
-Relay is a great framework with exiting ideas behind it. The downside is that in order to get all cool features of one you need to deal with complex API. Relay provides you a lot of tricky optimistions which probably are more suitable for huge projects. In small, medium and even large ones you would prefer to have better DX while working with a simple minimalistic set of APIs.
+Relay is a great framework with exiting ideas behind it. The downside is that in order to get all cool features of one you need to deal with complex API. Relay provides you a lot of tricky optimizations which probably are more suitable for huge projects. In small, medium and even large ones you would prefer to have better developer experience while working with a simple minimalistic set of APIs.
 
 Adrenaline intend to provide you Relay-like ability to describe your components with declarative data requirements, while keeping API as simple as possible. You are free to use it with different libraries like Redux, React Router and etc.
 
@@ -19,7 +21,7 @@ Adrenaline intend to provide you Relay-like ability to describe your components 
 
 ## Installation
 
-`npm install --save adrenaline`
+`npm install --save adrenaline@1.0.0-rc1`
 
 Adrenaline requires **React 0.14 or later.**
 
@@ -95,7 +97,7 @@ export default container({
 })(UserItem);
 ```
 
-Also container would pass 2 additional properties to your component
+Also container would pass 2 additional properties to your component `mutate` and `isFetching`.
 
 * `mutate({ mutation: String, variables: Object = {}, invalidate: boolean = true }): Promise`: You need to use this function in order to perform mutations. `invalidate` argument means you need to resolve data declarations after mutation.
 * `isFetching: boolean`: This property helps you understand if your component is in the middle of resolving data.
@@ -170,3 +172,28 @@ class UserItem extends Component {
   }
 }
 ```
+
+### Testing
+
+There is a common problem I've discovered so far while developing applications. When you change GraphQL schema you'd like to know which particular subtrees in your applications need to be fixed. And you probably do not want to check this running your application and go through it by hands.
+
+For this case Adrenaline provides you helper utilities for integration testing. Currently for `expect` only. You can use `toBeValidAgainst` for checking your components data requirements against your schema with GraphQL validation mechanism.
+
+```js
+import expect from 'expect';
+import TestUtils from 'adrenaline/lib/test';
+
+import schema from 'path/to/schema';
+// TodoApp is a container component
+import TodoApp from 'path/to/TodoApp';
+
+expect.extend(TestUtils.expect);
+
+describe('Queries regression', () => {
+  it('for TodoApp', () => {
+    expect(TodoApp).toBeValidAgainst(schema);
+  });
+});
+```
+
+![Image](https://raw.githubusercontent.com/gyzerok/adrenaline/master/images/resgression-example.png)
